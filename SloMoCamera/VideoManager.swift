@@ -23,8 +23,8 @@ class VideoManager: NSObject {
     var DDfilePathString :String?
     var documentDirectoryPath : String?
     var videoObjectArrayPath : String?
-//    var isSloMo : Bool?
-
+    var playbackRate : Float = 1.0
+    
     var VideoObjectsArray = [Video]()
     
     private override init() {
@@ -48,7 +48,7 @@ class VideoManager: NSObject {
 
     }
     
-    func saveMovie(movieURL : URL, isSloMo : Bool) {
+    func saveMovie(movieURL : URL, isSloMo : Bool, playbackRate: Float) -> Video {
         // save video, thumbnail and videoObjectsArray to documents directory
         
         // set new video pathname
@@ -81,11 +81,11 @@ class VideoManager: NSObject {
                 }
                 
                 // add new video & thumbnail object to videoArray
-                let newVideo = Video.init(videoPath: moviePathString, thumbnailPath: thumbnailPathString!, isSloMo : isSloMo)
+                let newVideo = Video.init(videoPath: moviePathString, thumbnailPath: thumbnailPathString!, isSloMo : isSloMo, playbackRate: Float(playbackRate))
                 
                 // add video Object to array
                 self.VideoObjectsArray.append(newVideo)
-                
+                return newVideo
                 
                 
             } catch {
@@ -102,6 +102,10 @@ class VideoManager: NSObject {
         } else {
             print("error saving file")
         }
+        
+        // return empty videoObject
+        let video = Video.init(videoPath: "", thumbnailPath: "", isSloMo: false, playbackRate: 1.0)
+        return video
     }
     
     
@@ -117,86 +121,14 @@ class VideoManager: NSObject {
         // if file exists then unarchive
         guard let result = NSData(contentsOf: url)
             else {
-            // No data in your fileURL. So no data is received. Do your task if you got no data
-            // Keep in mind that you don't have access to your result here.
-            // You can return from here.
+            print("nothing archived on device")
             return
         }
-        // You got your data successfully that was in your fileURL location. Do your task with your result.
-        // You can have access to your result variable here. You can do further with result constant.
+        // unarchive and set to VideoObjectArray
         let result1 = NSKeyedUnarchiver.unarchiveObject(with: result as Data)
         self.VideoObjectsArray = result1 as! [Video]
         
     }
-    
-    
-//    func configureCameraFPS(videoDevice : AVCaptureDevice,  desiredFrameRate: Float64)  {
-//        var isFPSSupported = false
-//        let cameraSupportedRanges = videoDevice.activeFormat
-//        
-//        for format in (videoDevice.formats)! {
-//            for range in (format as AnyObject).videoSupportedFrameRateRanges {
-//                if (desiredFrameRate <= (range as AnyObject).maxFrameRate && desiredFrameRate >= (range as AnyObject).minFrameRate){
-//                    // set desired frame rate
-//                    isFPSSupported = true
-//                }
-//            }
-//        
-//            if isFPSSupported {
-//                videoDevice.lockForConfiguration {
-//                videoDevice.activeVideoMaxFrameDuration = CMTimeMake( 1, Int32(desiredFrameRate) )
-//                videoDevice.activeVideoMinFrameDuration = CMTimeMake( 1, Int32(desiredFrameRate) )
-//                videoDevice.unlockForConfiguration
-//            } else {
-//                print("error")
-//            }
-//        }
-//    }
-    
-
-
-//    func attemptToConfigure5FPS(videoDevice : AVCaptureDevice,  desiredFrameRate: Int) {
-//        let error : NSError?
-//
-//        
-//        if (videoDevice.lockForConfiguration) {
-//                print("Could not lock device %@ for configuration: \(self), \(error)")
-//            
-//            let format = videoDevice.activeFormat
-//            let epsilon = 0.00000001
-//            let desiredFrameRate = 120
-//            
-//            for ( range in format.videoSupportedFrameRateRanges) {
-//                
-//                if (range.minFrameRate <= (desiredFrameRate + epsilon) &&
-//                    range.maxFrameRate >= (desiredFrameRate - epsilon)) {
-//                    
-//                    self.activeVideoMaxFrameDuration = (CMTime){
-//                        .value = 1,
-//                        .timescale = desiredFrameRate,
-//                        .flags = kCMTimeFlags_Valid,
-//                        .epoch = 0,
-//                    }
-//                    self.activeVideoMinFrameDuration = (CMTime){
-//                        .value = 1,
-//                        .timescale = desiredFrameRate,
-//                        .flags = kCMTimeFlags_Valid,
-//                        .epoch = 0,
-//                    }
-//                    break
-//                }
-//            }
-//            
-//            videoDevice.unlockForConfiguration()
-//
-//        } catch {
-//            print(error?.localizedDescription)
-//        }
-//        
-//        
-//            }
-
-
     
 }
 

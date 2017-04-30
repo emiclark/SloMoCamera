@@ -13,11 +13,13 @@ class Video: NSObject, NSCoding {
     let videoPath : String
     let thumbnailPath : String
     let isSloMo : Bool
+    let playbackRate : Float
     
-    init(videoPath: String, thumbnailPath : String, isSloMo : Bool) {
+    init(videoPath: String, thumbnailPath : String, isSloMo : Bool, playbackRate : Float) {
         self.videoPath = videoPath
         self.thumbnailPath = thumbnailPath
         self.isSloMo = isSloMo
+        self.playbackRate = playbackRate
         
     }
     
@@ -28,14 +30,16 @@ class Video: NSObject, NSCoding {
         let videoPath = decoder.decodeObject(forKey: "videoPath") as! String
         let thumbnailPath = decoder.decodeObject(forKey: "thumbnailPath") as! String
         let isSloMo = decoder.decodeBool(forKey: "isSloMo")
+        let playbackRate = decoder.decodeFloat(forKey: "playbackRate")
         
-        self.init(videoPath: videoPath, thumbnailPath: thumbnailPath, isSloMo : isSloMo)
+        self.init(videoPath: videoPath, thumbnailPath: thumbnailPath, isSloMo : isSloMo, playbackRate: Float(playbackRate))
     }
     
     func encode(with coder: NSCoder) {
         coder.encode(videoPath, forKey: "videoPath")
         coder.encode(thumbnailPath, forKey: "thumbnailPath")
         coder.encode(isSloMo, forKey: "isSloMo")
+        coder.encode(playbackRate, forKey: "playbackRate")
     }
     
     

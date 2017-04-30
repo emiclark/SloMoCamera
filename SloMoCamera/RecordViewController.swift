@@ -21,6 +21,7 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     var isSloMo = false
     var movieWasSaved = false
     var newVideo : Video?
+    var playbackRate : Float?
     
     @IBOutlet var previewView: UIView!
     @IBOutlet weak var saveButton: UIButton!
@@ -66,44 +67,28 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         if (self.outputFileLocation != nil) {
             
             // save recorded video to device
-            VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, isSloMo: self.isSloMo)
+            newVideo = VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, isSloMo: self.isSloMo, playbackRate : Float(self.playbackRate!))
+            
+            guard newVideo?.videoPath != "" else {
+                print("Error saving video")
+                return
+            }
+            
             movieWasSaved = true
             
             // set up player VC
             if let url = self.outputFileLocation {
                 
                 self.avPlayer = AVPlayer(url: url)
-                
-                if self.isSloMo == true {
-                    // playback at 1/2 speed
-                    print(self.isSloMo)
-                    self.avPlayer?.rate = 0.125
-                } else {
-                    // playback at regular speed
-                    print(self.isSloMo)
-                    self.avPlayer?.rate = 1.0
-                }
-                
+                self.avPlayer?.rate = (newVideo?.playbackRate)!
                 self.avPlayerViewController.player = self.avPlayer
             }
             
             // present view controller
             self.present(self.avPlayerViewController, animated: true) { 
                 self.avPlayerViewController.player?.play()
-
-                // check if video was recorded in slo-mo
-                if self.isSloMo == true {
-                    // playback at 1/4 speed
-                    print("playback in slomo- \(String(describing: self.avPlayer?.rate))")
-//                    self.avPlayer?.setRate(0.02r5, time: CMTime(1,30))
-
-//                    self.avPlayer?.rate = 0.025
-                    self.avPlayer?.rate = 0.0625
-                } else {
-                    // playback at regular speed
-                    print(self.isSloMo)
-                    self.avPlayer?.rate = 1.0
-                }
+                self.avPlayer?.rate = (self.newVideo?.playbackRate)!
+                print("playback in slomo- \(String(describing: self.avPlayer?.rate))")
                 
             }
         }
@@ -144,7 +129,7 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         var desiredFrameRate : Int32 = 30
         
         do {
-            
+            // check device supports 240/120/60 fps. if yes then set to highest supported frame rate
             if let formats = self.videoCaptureDevice?.formats as? [AVCaptureDeviceFormat] {
                 for format in formats {
                     
@@ -158,6 +143,7 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                 isFPSSupported = true
                                 isSloMo = true
                                 desiredFrameRate = Int32(range.maxFrameRate)
+                                self.playbackRate = 0.125
                                 activeFormat = format
                                 break
                         } else if (range.maxFrameRate == 120
@@ -167,6 +153,7 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                 isFPSSupported = true
                                 isSloMo = true
                                 desiredFrameRate = Int32(range.maxFrameRate)
+                                self.playbackRate = 0.25
                                 activeFormat = format
                                 break
                         } else if (range.maxFrameRate == 60
@@ -176,13 +163,21 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                 isFPSSupported = true
                                 isSloMo = true
                                 desiredFrameRate = Int32(range.maxFrameRate)
+                                self.playbackRate = Float(range.maxFrameRate)
                                 activeFormat = format
+                                self.playbackRate = 0.5
                                 break
                         }
                         
                         print(range)
                     }
                 }
+            }
+            
+            if self.recordMode.selectedSegmentIndex == 0 {
+                // normal 30fps recording with playback at normal rate
+                isSloMo = false
+                playbackRate = 1.0
             }
             
             if isFPSSupported {
@@ -249,12 +244,7 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             do {
                 // add video as an input device
                 try self.captureSession.addInput(AVCaptureDeviceInput(device: self.videoCaptureDevice))
-                
-                // check default audio inputs on device and add them as input device
-//                if let audioInput = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio) {
-//                    try self.captureSession.addInput(AVCaptureDeviceInput(device: audioInput))
-//                }
-                
+
                 // create preview layer to view recording scene
                 self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
                 
@@ -436,382 +426,5 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     */
 
 }
-
-
-
-//========
-//@IBAction func recordModePressed(_ sender: UISegmentedControl) {
-//    // set the capture mode to either normal:30fps or slow motion:60fps
-//    
-//    var selectedFormat : AVCaptureDeviceFormat?
-//    
-//    // query the valid fps range for device
-//    for format in (self.videoCaptureDevice?.formats)! {
-//        for range in (format as AnyObject).videoSupportedFrameRateRanges {
-//            if #available(iOS 9.0, *) {
-//                if 60 <= (range as AnyObject).maxFrameRate {
-//                    selectedFormat = format as? AVCaptureDeviceFormat
-//                }
-//            }
-//        }
-//    }
-//    
-//    // video recording at 30fps selected
-//    if self.recordMode.selectedSegmentIndex == 0 {
-//        
-//        // video recording at 30fps selected - normal
-//        if format != nil {
-//            
-//            do {
-//                try self.videoCaptureDevice?.lockForConfiguration()
-//                self.videoCaptureDevice?.activeFormat = format
-//
-//                self.videoCaptureDevice?.activeVideoMinFrameDuration = CMTimeMake(1, 30)
-//                self.videoCaptureDevice?.activeVideoMaxFrameDuration = CMTimeMake(1, 30)
-//                self.videoCaptureDevice?.unlockForConfiguration()
-//                self.isSloMo = false
-//            } catch {
-//                print(error)
-//            }
-//        }
-//    } else {
-//        
-//        // video recording at 120fps selected - slow motion
-//        if selectedFormat != nil {
-//
-//            do {
-//                try self.videoCaptureDevice?.lockForConfiguration()
-//                self.videoCaptureDevice?.activeFormat = format
-//                self.videoCaptureDevice?.activeVideoMinFrameDuration = CMTimeMake(1, 120)
-//                self.videoCaptureDevice?.activeVideoMaxFrameDuration = CMTimeMake(1, 120)
-//                self.videoCaptureDevice?.unlockForConfiguration()
-//                self.isSloMo = true
-//            } catch {
-//                print(error)
-//            }
-//
-//        }
-//    }
-//}
-
-//========================
-
-////        var selectedFrameRate : Float64 = 60
-////        let supportedFrameRates = self.videoCaptureDevice?.activeFormat.videoSupportedFrameRateRanges
-////
-////        // query the valid fps range for device
-////        for framerate in supportedFrameRates! {
-////
-////            if #available(iOS 10.0, *) {
-////                if ((framerate as AnyObject).maxFrameRate <= 120 || (framerate as AnyObject).maxFrameRate <= 240) {
-////                    selectedFrameRate = (framerate as AnyObject).maxFrameRate
-////                }
-////            }
-////        }
-//
-//// video recording at 30fps selected
-//if self.recordMode.selectedSegmentIndex == 0 {
-//    
-//    // video recording at 30fps selected - normal
-//    //            if selectedFrameRate != nil {
-//    
-//    do {
-//        self.captureSession.beginConfiguration()
-//        try self.videoCaptureDevice?.lockForConfiguration()
-//        //                    self.videoCaptureDevice?.activeFormat = Int32(selectedFrameRate!)
-//        
-//        self.videoCaptureDevice?.activeVideoMinFrameDuration = CMTimeMake(1, Int32(30))
-//        self.videoCaptureDevice?.activeVideoMaxFrameDuration = CMTimeMake(1, 30)
-//        self.videoCaptureDevice?.unlockForConfiguration()
-//        self.isSloMo = false
-//        self.captureSession.commitConfiguration()
-//    } catch {
-//        print(error)
-//    }
-//    //            }
-//} else {
-//    
-//    // video recording at 120fps or 240fps selected - slow motion
-//    //            if (selectedFrameRate != nil && selectedFrameRate ==  240) {
-//    
-//    do {
-//        self.captureSession.beginConfiguration()
-//        try self.videoCaptureDevice?.lockForConfiguration()
-//        //                    self.videoCaptureDevice?.activeFormat = selectedFrameRate
-//        //                    self.videoCaptureDevice?.activeVideoMinFrameDuration = CMTimeMake(5, 1200)
-//        //                    self.videoCaptureDevice?.activeVideoMaxFrameDuration = CMTimeMake(5, Int32(1200))
-//        self.videoCaptureDevice?.activeVideoMinFrameDuration = CMTimeMake(1, 60)
-//        self.videoCaptureDevice?.activeVideoMaxFrameDuration = CMTimeMake(1, 60)
-//        self.videoCaptureDevice?.unlockForConfiguration()
-//        self.captureSession.commitConfiguration()
-//        self.isSloMo = true
-//    } catch {
-//        print(error)
-//    }
-//    
-//    //            } else if (selectedFrameRate != nil && selectedFrameRate ==  120) {
-//    //                // 240fps not available on device. set slo-mo speed to 120
-//    //                do {
-//    //                    self.captureSession.beginConfiguration()
-//    //                    try self.videoCaptureDevice?.lockForConfiguration()
-//    //                    //                    self.videoCaptureDevice?.activeFormat = selectedFrameRate
-//    //                    self.videoCaptureDevice?.activeVideoMinFrameDuration = CMTimeMake(5, 600)
-//    //                    self.videoCaptureDevice?.activeVideoMaxFrameDuration = CMTimeMake(5, 600)
-//    //                    self.videoCaptureDevice?.unlockForConfiguration()
-//    //                    self.captureSession.commitConfiguration()
-//    //                    self.isSloMo = true
-//    //                } catch {
-//    //                    print(error)
-//    //                }
-//    //            }
-//}
-
-//=================
-//    func configureCameraFPS(desiredFrameRate: Float64)  {
-//        var isFPSSupported = false
-////        let cameraSupportedRanges = self.videoCaptureDevice?.activeFormat
-//
-//        for format in (self.videoCaptureDevice?.formats)! {
-//            for range in (format as AnyObject).videoSupportedFrameRateRanges {
-//                if (desiredFrameRate <= (range as AnyObject).maxFrameRate && desiredFrameRate >= (range as AnyObject).minFrameRate){
-//                    // set desired frame rate
-//                    isFPSSupported = true
-//                }
-//            }
-//
-//
-//        }
-//        if isFPSSupported {
-//            do {
-//
-//
-//                    self.captureSession.beginConfiguration()
-//                    if self.videoCaptureDevice?.lockForConfiguration() {
-//                        if 120 == self.videoCaptureDevice?.activeFormat.videoSupportedFrameRateRanges  {
-//
-//                        }
-//
-//                    } catch {
-//                        print(error)
-//                    }
-//
-//
-//                [session beginConfiguration]; // the session to which the receiver's AVCaptureDeviceInput is added.
-//                if ( [device lockForConfiguration:&error] ) {
-//                    [device setActiveFormat:newFormat];
-//                    [device setActiveVideoMinFrameDuration:newMinDuration];
-//                    [device setActiveVideoMaxFrameDuration:newMaxDuration];
-//                    [device unlockForConfiguration];
-//
-//
-//
-//
-//
-//
-//
-//
-//                try self.videoCaptureDevice?.lockForConfiguration()
-//                self.videoCaptureDevice?.activeFormat.videoSupportedFrameRateRanges = CMTimeMake( 1, Int32(desiredFrameRate) )
-//                self.videoCaptureDevice?.activeVideoMinFrameDuration = CMTimeMake( 1, Int32(desiredFrameRate) )
-//                self.videoCaptureDevice?.unlockForConfiguration()
-//
-//            } catch {
-//                print(error)
-//            }
-//        }
-//    }
-
-
-//====================================
-
-
-//                    if (range.maxFrameRate >= Double(desiredFrameRate) && range.minFrameRate <= Double(desiredFrameRate)) {
-//                        isFPSSupported = true
-//                        try! videoCaptureDevice?.lockForConfiguration()
-//                        videoCaptureDevice?.activeFormat = format
-//                        videoCaptureDevice?.unlockForConfiguration()
-//                        break
-//                    }
-
-
-//        var desiredFrameRate = CMTimeMake(1, 240);
-//        var frameRateSupported = false
-//        let deviceFrameRates  = AVFrameRateRange()
-//        let supportedFrameRateRanges = videoCaptureDevice?.activeFormat
-//
-//        for  range in (supportedFrameRateRanges?.videoSupportedFrameRateRanges)! {
-//
-//            if desiredFrameRate >= (range as AnyObject).minFrameDuration && desiredFrameRate <= (range as AnyObject).maxFrameDuration {
-//                frameRateSupported = true
-//                print(desiredFrameRate)
-//            }
-//        }
-//
-////        let float = deviceFrameRates.maxFrameRate
-////        print(float)
-////
-////        if  (deviceFrameRates.maxFrameRate == 240.0 ){
-////            desiredFrameRate = CMTimeMake(1, 240)
-////
-////        } else if  ((desiredFrameRate.timescale != 240))  && (deviceFrameRates.maxFrameRate == 120) {
-////            desiredFrameRate = CMTimeMake(1, 120)
-////
-////        }
-////
-//
-////        if (frameRateSupported) {
-//            do {
-//                self.captureSession.beginConfiguration()
-//                try videoCaptureDevice?.lockForConfiguration()
-//                videoCaptureDevice?.activeVideoMinFrameDuration = desiredFrameRate
-//                videoCaptureDevice?.activeVideoMaxFrameDuration = desiredFrameRate
-//                videoCaptureDevice?.unlockForConfiguration()
-//                self.captureSession.commitConfiguration()
-//            } catch {
-//                print(error)
-//            }
-//        }
-
-
-//====================
-
-//
-//        func configureDevice() {
-//
-//            var bestFormat: AVCaptureDeviceFormat? = nil
-////            var bestFrameRateRange: AVFrameRateRange? = nil
-//            var bestFrameRateRange = CMTimeMake(1, <#T##timescale: Int32##Int32#>)
-//
-//            var bestPixelArea: Int32 = 0
-//            for format in self.videoCaptureDevice!.formats {
-//                let ranges = (format as AnyObject).videoSupportedFrameRateRanges as! [AVFrameRateRange];
-//                for range in ranges {
-//
-//                    if bestFrameRateRange==nil || (range.maxFrameRate > bestFrameRateRange.maxFrameRate) || ((range.maxFrameRate == bestFrameRateRange.maxFrameRate)) {
-//                        bestFormat = format as? AVCaptureDeviceFormat
-//                        bestFrameRateRange = range
-//                    }
-//                }
-//            }
-//
-//            do {
-//
-//                try self.videoCaptureDevice!.lockForConfiguration() {
-//
-//                    self.videoCaptureDevice!.activeFormat = bestFormat
-//                    self.videoCaptureDevice!.activeVideoMinFrameDuration = bestFrameRateRange!.minFrameDuration
-//                    self.videoCaptureDevice!.activeVideoMaxFrameDuration = bestFrameRateRange!.minFrameDuration
-//
-//                } catch { }
-//
-//                print(self.videoCaptureDevice!.activeFormat.videoSupportedFrameRateRanges)
-//
-//                self.videoCaptureDevice!.unlockForConfiguration()
-//            }
-//        }
-
-
-
-
-
-
-
-//
-//
-//
-//
-//        // get supported frame rate for device
-//
-//        var deviceFrameRates = AVFrameRateRange()
-//        var desiredFrameRate = CMTimeMake(1, 30)
-//        var FPSSupported = false
-//
-//        let currentDeviceFormats = self.videoCaptureDevice?.activeFormat
-//
-//        for  range in (currentDeviceFormats?.videoSupportedFrameRateRanges)! {
-////            if ( (range as! AVFrameRateRange).maxFrameRate >= desiredFrameRate && (range as! AVFrameRateRange).minFrameRate <= desiredFrameRate )        {
-//
-//            if ( ((range as! AVFrameRateRange).maxFrameRate >= desiredFrameRate.timescale) && ((range as! AVFrameRateRange).minFrameRate <= desiredFrameRate.timescale ))        {
-//                FPSSupported = true
-//            }
-//
-//
-//            if  (deviceFrameRates.maxFrameRate == 240 ){
-//                desiredFrameRate = CMTimeMake(1, 240)
-//                print(range)
-//                continue
-//            } else if  ((desiredFrameRate.timescale != 240))  && (deviceFrameRates.maxFrameRate == 120) {
-//                desiredFrameRate = CMTimeMake(1, 120)
-//                print(desiredFrameRate)
-//                continue
-//
-//            }
-//            print(range)
-//
-//        }
-//
-//            self.captureSession.beginConfiguration()
-//
-//            do {
-//                try self.videoCaptureDevice?.lockForConfiguration()
-//
-//                    self.videoCaptureDevice?.activeVideoMinFrameDuration = desiredFrameRate
-//                    self.videoCaptureDevice?.activeVideoMaxFrameDuration = desiredFrameRate
-//
-//                    self.videoCaptureDevice?.unlockForConfiguration()
-//                    print("begin Config: OK")
-//                    self.isSloMo = true
-//
-//
-//            } catch {
-//                print("error")
-//            }
-//
-//            self.captureSession.commitConfiguration()
-
-
-//    }
-
-
-
-//======================
-
-//
-//
-//        if self.recordMode.selectedSegmentIndex == 0 {
-//            // normal 30fps recording
-//            if newFrameRates.maxFrameRate == 30 {
-//
-//                do {
-//                    print(newFrameRates)
-////                    try device.lockForConfiguration()
-////                    device.activeFormat = vFormat as! AVCaptureDeviceFormat
-////                    device.activeVideoMinFrameDuration = frameRates.minFrameDuration
-////                    device.activeVideoMaxFrameDuration = frameRates.maxFrameDuration
-////                    device.unlockForConfiguration()
-//
-//                } catch {
-//                    print(error)
-//                }
-//            }
-//
-//        } else {
-//            // slow motion 60/120/240fps recording
-//            if frameRates.maxFrameRate == 240 || frameRates.maxFrameRate == 120 || frameRates.maxFrameRate == 60 {
-//
-//                do {
-//                    try device.lockForConfiguration()
-//                    device.activeFormat = vFormat as! AVCaptureDeviceFormat
-//                    device.activeVideoMinFrameDuration = frameRates.minFrameDuration
-//                    device.activeVideoMaxFrameDuration = frameRates.maxFrameDuration
-//                    device.unlockForConfiguration()
-//
-//                } catch {
-//                    print(error)
-//                }
-//            }
-//
-//        }
-
 
 
