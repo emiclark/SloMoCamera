@@ -13,15 +13,15 @@ import AVFoundation
 class VideoPlayerViewController: UIViewController  {
 
     var video : Video?
-//    var avplayer = AVQueuePlayer.init()
+    
+    var previewLayer = AVCaptureVideoPreviewLayer()
     var avplayer = AVPlayer()
     var avplayerLayer : AVPlayerLayer? = nil
-    var previewLayer = AVCaptureVideoPreviewLayer()
-    let myRate : Float = 0.0125
+    var playerItem : AVPlayerItem?
+    
     let invisiblePlayButton =  UIButton()
     let doneButton = UIButton()
     var playerIsPlaying = false
-    var playerItem : AVPlayerItem?
     
     // MARK: View Methods
 
@@ -30,38 +30,8 @@ class VideoPlayerViewController: UIViewController  {
         super.viewDidLoad()
         view.backgroundColor = .black
 
-        //get url of track
-//        let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first?.appending((self.video?.videoPath)!)
-//        let url = NSURL(fileURLWithPath: (path)!)
-        
-//        print("VideoPlayerViewController >>>>>>  VideoPlayerURL: \(url)\n\n")
-
-//        //set up avplayer, clear current queue if playing straight away
-//        self.avplayer.removeAllItems()
-//        
-//        var error:NSError?        
-//        if (url.checkResourceIsReachableAndReturnError(&error) == false) {
-//
-//            self.playerItem = AVPlayerItem(url: url as URL)
-//            self.avplayer.insert(playerItem!, after: nil)
-//            
-//            avplayerLayer = AVPlayerLayer(player: self.avplayer)
-//            view.layer.insertSublayer(avplayerLayer!, at: 0)
-//
-////            self.avplayer.replaceCurrentItem(with: playerItem)
-//            self.avplayer.pause()
-//
-//        }
-        
-        
         avplayerLayer = AVPlayerLayer(player: avplayer)
         view.layer.insertSublayer(avplayerLayer!, at: 0)
-        
-////        playerItem = AVPlayerItem(url: url as URL)
-////        avplayer.replaceCurrentItem(with: playerItem)
-        
-        
-        
         
         // create play button
         view.addSubview(invisiblePlayButton)
@@ -79,6 +49,7 @@ class VideoPlayerViewController: UIViewController  {
         doneButton.backgroundColor = .blue
         doneButton.backgroundColor?.withAlphaComponent(0.5)
         doneButton.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
+        
         view.addSubview(doneButton)
         view.bringSubview(toFront: doneButton)
 
@@ -101,14 +72,16 @@ class VideoPlayerViewController: UIViewController  {
         invisiblePlayButton.frame = view.bounds
     }
 
-    
+    // MARK: Observer Method
+
     func playerDidFinishPlaying(note: NSNotification) {
         // reset params
         playerIsPlaying = true
         invisiblePlayButton.isHidden = false
     }
     
-    
+    // MARK: Helper Methods
+
     func setVideoOrientation() {
         // sets the video orientation of prevew layer
         if let connection = self.previewLayer.connection {
@@ -125,15 +98,14 @@ class VideoPlayerViewController: UIViewController  {
         // Dispose of any resources that can be recreated.
     }
     
-    
+    // MARK: Button Tapped Methods
+
     func invisibleButtonTapped(sender: UIButton) {
-    
         // begin playing
         avplayer.seek(to: kCMTimeZero)
         invisiblePlayButton.isHidden = true
         print("playbackRate: \(String(describing: avplayer.rate))")
         avplayer.playImmediately(atRate: (video?.playbackRate)!)
-        
     }
 
     func doneButtonTapped(sender: UIButton) {
@@ -142,7 +114,6 @@ class VideoPlayerViewController: UIViewController  {
     }
 
     /*
-    // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

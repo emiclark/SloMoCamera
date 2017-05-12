@@ -18,7 +18,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     var VideoPlayerVC = VideoPlayerViewController()
     var avPlayer : AVPlayer?
     var DDMoviePathURL : URL?
-    var isSloMo = false
     var movieWasSaved = false
     var newVideo : Video?
     var playbackRate : Float?
@@ -66,8 +65,8 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         }
         
         print("saved outputFileLocation: ->>", self.outputFileLocation!)
-        
-        newVideo = VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, isSloMo: self.isSloMo, playbackRate : Float(self.playbackRate!))
+  
+        newVideo = VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, playbackRate : Float(self.playbackRate!))
         
         // set properties in VideoPlayerVC
         let videoPlayerVC = VideoPlayerViewController()
@@ -90,33 +89,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             
         // present view controller
         self.present(videoPlayerVC, animated: true)
-        
-        
-        
-//        if (self.outputFileLocation != nil) {
-//            
-//            // save recorded video to device
-//            newVideo = VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, isSloMo: self.isSloMo, playbackRate : Float(self.playbackRate!))
-//            
-//            guard newVideo?.videoPath != "" else {
-//                print("Error saving video")
-//                return
-//            }
-//            print("newVideo.videoPath: \(String(describing: newVideo?.videoPath))")
-//            
-//                // set up player VC
-//                if (newVideo?.videoPath != nil) {
-//
-//                    // set properties in VideoPlayerVC
-//                    self.VideoPlayerVC.video = newVideo
-//                    
-//                    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first?.appending((newVideo?.videoPath)!)
-//                    let url = NSURL(fileURLWithPath: (path)!)
-//                    
-//                    self.VideoPlayerVC.playerItem = AVPlayerItem(url: url as URL)
-//                    movieWasSaved = true
-//                }
-//            }
         
         // present view controller
         self.present(self.VideoPlayerVC, animated: true)
@@ -169,7 +141,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                             && range.minFrameRate <= Double(desiredFrameRate)) {
                                 // supports 240fps
                                 isFPSSupported = true
-                                isSloMo = true
                                 desiredFrameRate = Int32(range.maxFrameRate)
                                 self.playbackRate = fps240PlaybackRate
                                 activeFormat = format
@@ -179,7 +150,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                             && range.minFrameRate <= Double(desiredFrameRate)) {
                                 // supports 120fps
                                 isFPSSupported = true
-                                isSloMo = true
                                 desiredFrameRate = Int32(range.maxFrameRate)
                                 self.playbackRate = 0.25
                                 activeFormat = format
@@ -189,7 +159,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                             && range.minFrameRate <= Double(desiredFrameRate)) {
                                 // supports 60fps
                                 isFPSSupported = true
-                                isSloMo = true
                                 desiredFrameRate = Int32(range.maxFrameRate)
                                 self.playbackRate = Float(range.maxFrameRate)
                                 activeFormat = format
@@ -204,7 +173,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             
             if self.recordMode.selectedSegmentIndex == 0 {
                 // normal 30fps recording with playback at normal rate
-                isSloMo = false
                 playbackRate = 1.0
             }
             
@@ -398,7 +366,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     @available(iOS 10.0, *)
     func cameraWithPosition(position: AVCaptureDevicePosition) -> AVCaptureDevice? {
-        
         // queries if the device has video camera and returns valid camera position: front or back
         let discovery = AVCaptureDeviceDiscoverySession(deviceTypes: [AVCaptureDeviceType.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: position)
         
@@ -417,7 +384,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     }
     
     func updateRecordButtonTitle() {
-        
         // toggle record button title to Recording... when recording video
         if  self.captureSession.isRunning {
             self.recordButton.setTitle("Recording..", for: .normal)

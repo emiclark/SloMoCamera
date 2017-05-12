@@ -27,12 +27,35 @@ class VideoManager: NSObject {
     
     var VideoObjectsArray = [Video]()
     
+    // MARK: Init Method
+
     private override init() {
         
     }
     
     
-    // MARK: Helper
+    // MARK: Helper Methods
+    
+    func initializeApp() {
+        // loads existing videos from document directory into app
+        
+        // get path for documents directory
+        self.documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as String
+        self.videoObjectArrayPath = self.documentDirectoryPath?.appending("/VideoObjectsArray")
+        print(self.videoObjectArrayPath!)
+        let url = URL(fileURLWithPath: self.videoObjectArrayPath!)
+        
+        // if file exists then unarchive
+        guard let result = NSData(contentsOf: url)
+            else {
+                print("nothing archived on device")
+                return
+        }
+        // unarchive and set to VideoObjectArray
+        let result1 = NSKeyedUnarchiver.unarchiveObject(with: result as Data)
+        self.VideoObjectsArray = result1 as! [Video]
+    }
+    
     
     func getNewPath(forFilename: String) -> String {
         // create timestamp filename for asset to be saved to document directory
@@ -45,10 +68,10 @@ class VideoManager: NSObject {
         let pathname = self.dateString?.appending(forFilename)
         print("pathname:>> \(String(describing: pathname))")
         return pathname!
-
     }
     
-    func saveMovie(movieURL : URL, isSloMo : Bool, playbackRate: Float) -> Video {
+
+    func saveMovie(movieURL : URL, playbackRate: Float) -> Video {
         // save video, thumbnail and videoObjectsArray to documents directory
         
         // set new video pathname
@@ -81,7 +104,7 @@ class VideoManager: NSObject {
                 }
                 
                 // add new video & thumbnail object to videoArray
-                let newVideo = Video.init(videoPath: moviePathString, thumbnailPath: thumbnailPathString!, isSloMo : isSloMo, playbackRate: Float(playbackRate))
+                let newVideo = Video.init(videoPath: moviePathString, thumbnailPath: thumbnailPathString!, playbackRate: Float(playbackRate))
                 
                 // add video Object to array
                 self.VideoObjectsArray.append(newVideo)
@@ -104,31 +127,12 @@ class VideoManager: NSObject {
         }
         
         // return empty videoObject
-        let video = Video.init(videoPath: "", thumbnailPath: "", isSloMo: false, playbackRate: 1.0)
+        let video = Video.init(videoPath: "", thumbnailPath: "", playbackRate: 1.0)
         return video
     }
     
     
-    func initializeApp() {
-        // loads existing videos from document directory into app
-        
-        // get path for documents directory
-        self.documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as String
-        self.videoObjectArrayPath = self.documentDirectoryPath?.appending("/VideoObjectsArray")
-        print(self.videoObjectArrayPath!)
-        let url = URL(fileURLWithPath: self.videoObjectArrayPath!)
-        
-        // if file exists then unarchive
-        guard let result = NSData(contentsOf: url)
-            else {
-            print("nothing archived on device")
-            return
-        }
-        // unarchive and set to VideoObjectArray
-        let result1 = NSKeyedUnarchiver.unarchiveObject(with: result as Data)
-        self.VideoObjectsArray = result1 as! [Video]
-        
-    }
+
     
 }
 
