@@ -15,13 +15,17 @@ import Photos
 
 class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
 
-    var avPlayerViewController = AVPlayerViewController()
+    var VideoPlayerVC = VideoPlayerViewController()
     var avPlayer : AVPlayer?
     var DDMoviePathURL : URL?
     var isSloMo = false
     var movieWasSaved = false
     var newVideo : Video?
     var playbackRate : Float?
+    
+    let fps240PlaybackRate : Float = 0.125
+    let fps120PlaybackRate : Float = 0.250
+    let fps60PlaybackRate  : Float = 0.500
     
     @IBOutlet var previewView: UIView!
     @IBOutlet weak var saveButton: UIButton!
@@ -31,7 +35,7 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     let captureSession = AVCaptureSession()
     var videoCaptureDevice : AVCaptureDevice?
-    var previewLayer :AVCaptureVideoPreviewLayer?
+    var previewLayer : AVCaptureVideoPreviewLayer?
     var movieFileOutput = AVCaptureMovieFileOutput()
     let MAX_RECORDED_DURATION = Int64(10.0) // max seconds to record video
     
@@ -55,7 +59,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
 
     // MARK: Button Actions
     
-
     @IBAction func saveButtonPressed(_ sender: UIButton) {
         
         if self.captureSession.isRunning {
@@ -64,34 +67,59 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         
         print("saved outputFileLocation: ->>", self.outputFileLocation!)
         
-        if (self.outputFileLocation != nil) {
+        newVideo = VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, isSloMo: self.isSloMo, playbackRate : Float(self.playbackRate!))
+        
+        // set properties in VideoPlayerVC
+        let videoPlayerVC = VideoPlayerViewController()
+        
+        videoPlayerVC.video = newVideo
+        let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as String
+        let filepath = documentDirectoryPath.appending((newVideo?.videoPath)!)
+        let selectedVideoURL = URL(fileURLWithPath: (filepath))
+        
+        print("self.selectedVideoURL: \(String(describing: selectedVideoURL))")
+    
+        videoPlayerVC.video = newVideo
+        videoPlayerVC.playerItem = AVPlayerItem(url: selectedVideoURL as URL)
+
+        videoPlayerVC.avplayer = AVPlayer(playerItem: videoPlayerVC.playerItem)
+        videoPlayerVC.avplayerLayer = AVPlayerLayer(player: videoPlayerVC.avplayer)
+        view.layer.insertSublayer(videoPlayerVC.avplayerLayer!, at: 0)
+        
+        movieWasSaved = true
             
-            // save recorded video to device
-            newVideo = VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, isSloMo: self.isSloMo, playbackRate : Float(self.playbackRate!))
-            
-            guard newVideo?.videoPath != "" else {
-                print("Error saving video")
-                return
-            }
-            
-            movieWasSaved = true
-            
-            // set up player VC
-            if let url = self.outputFileLocation {
-                
-                self.avPlayer = AVPlayer(url: url)
-                self.avPlayer?.rate = (newVideo?.playbackRate)!
-                self.avPlayerViewController.player = self.avPlayer
-            }
-            
-            // present view controller
-            self.present(self.avPlayerViewController, animated: true) { 
-                self.avPlayerViewController.player?.play()
-                self.avPlayer?.rate = (self.newVideo?.playbackRate)!
-                print("playback in slomo- \(String(describing: self.avPlayer?.rate))")
-                
-            }
-        }
+        // present view controller
+        self.present(videoPlayerVC, animated: true)
+        
+        
+        
+//        if (self.outputFileLocation != nil) {
+//            
+//            // save recorded video to device
+//            newVideo = VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, isSloMo: self.isSloMo, playbackRate : Float(self.playbackRate!))
+//            
+//            guard newVideo?.videoPath != "" else {
+//                print("Error saving video")
+//                return
+//            }
+//            print("newVideo.videoPath: \(String(describing: newVideo?.videoPath))")
+//            
+//                // set up player VC
+//                if (newVideo?.videoPath != nil) {
+//
+//                    // set properties in VideoPlayerVC
+//                    self.VideoPlayerVC.video = newVideo
+//                    
+//                    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first?.appending((newVideo?.videoPath)!)
+//                    let url = NSURL(fileURLWithPath: (path)!)
+//                    
+//                    self.VideoPlayerVC.playerItem = AVPlayerItem(url: url as URL)
+//                    movieWasSaved = true
+//                }
+//            }
+        
+        // present view controller
+        self.present(self.VideoPlayerVC, animated: true)
         self.captureSession.startRunning()
     }
     
@@ -143,7 +171,7 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                                 isFPSSupported = true
                                 isSloMo = true
                                 desiredFrameRate = Int32(range.maxFrameRate)
-                                self.playbackRate = 0.125
+                                self.playbackRate = fps240PlaybackRate
                                 activeFormat = format
                                 break
                         } else if (range.maxFrameRate == 120

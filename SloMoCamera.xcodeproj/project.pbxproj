@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		000E4FD81EB7CE6400ECE440 /* VideoPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000E4FD71EB7CE6400ECE440 /* VideoPlayerViewController.swift */; };
 		002F358B1EA80F6000A67384 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002F358A1EA80F6000A67384 /* Video.swift */; };
 		005D9B5E1EA53ABF00DB4CAD /* VideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005D9B5D1EA53ABF00DB4CAD /* VideoManager.swift */; };
 		00AF4C831EA1434A00DA6BE6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AF4C821EA1434A00DA6BE6 /* AppDelegate.swift */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		000E4FD71EB7CE6400ECE440 /* VideoPlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewController.swift; sourceTree = "<group>"; };
 		002F358A1EA80F6000A67384 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
 		005D9B5D1EA53ABF00DB4CAD /* VideoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoManager.swift; sourceTree = "<group>"; };
 		00AF4C7F1EA1434A00DA6BE6 /* SloMoCamera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SloMoCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -79,6 +81,7 @@
 				005D9B5D1EA53ABF00DB4CAD /* VideoManager.swift */,
 				00F7BF2F1EA663C600461AEA /* PlayCollectionViewController.swift */,
 				00AF4C941EA14A5600DA6BE6 /* RecordViewController.swift */,
+				000E4FD71EB7CE6400ECE440 /* VideoPlayerViewController.swift */,
 				00AF4C891EA1434A00DA6BE6 /* Assets.xcassets */,
 				00AF4C8B1EA1434A00DA6BE6 /* LaunchScreen.storyboard */,
 				00AF4C8E1EA1434A00DA6BE6 /* Info.plist */,
@@ -172,6 +175,7 @@
 				00D124951EA69E5E00F93A09 /* VideoCell.swift in Sources */,
 				002F358B1EA80F6000A67384 /* Video.swift in Sources */,
 				00AF4C951EA14A5600DA6BE6 /* RecordViewController.swift in Sources */,
+				000E4FD81EB7CE6400ECE440 /* VideoPlayerViewController.swift in Sources */,
 				00AF4C831EA1434A00DA6BE6 /* AppDelegate.swift in Sources */,
 				005D9B5E1EA53ABF00DB4CAD /* VideoManager.swift in Sources */,
 				00F7BF301EA663C600461AEA /* PlayCollectionViewController.swift in Sources */,

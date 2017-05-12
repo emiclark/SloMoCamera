@@ -10,7 +10,6 @@ import UIKit
 import AVFoundation
 import AVKit
 
-
 private let reuseIdentifier = "Cell"
 
 class PlayCollectionViewController : UICollectionViewController {
@@ -82,27 +81,24 @@ class PlayCollectionViewController : UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        self.selectedVideo = videoManager.VideoObjectsArray[indexPath.row]
-        let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as String
-        let filepath = documentDirectoryPath.appending((self.selectedVideo?.videoPath)!)
-        self.selectedVideoURL = URL(fileURLWithPath: (filepath))
+        // set properties in VideoPlayerVC
+        let videoPlayerVC = VideoPlayerViewController()
         
-        // set up player VC
-        if let url = self.selectedVideoURL {
-            self.avPlayer = AVPlayer(url: url)
-            self.avPlayerViewController.player = self.avPlayer
-        }
+        // assign selected object to videoPlayerVC.video property
+        videoPlayerVC.video = videoManager.VideoObjectsArray[indexPath.row]
+        
+        // find document directory path
+        let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as String
+        let filepath = documentDirectoryPath.appending((videoPlayerVC.video?.videoPath)!)
+        let selectedVideoURL = URL(fileURLWithPath: (filepath))
+        videoPlayerVC.playerItem = AVPlayerItem(url: selectedVideoURL as URL)
+        videoPlayerVC.avplayer = AVPlayer(playerItem: videoPlayerVC.playerItem)
+        videoPlayerVC.avplayerLayer = AVPlayerLayer(player: videoPlayerVC.avplayer)
+        view.layer.insertSublayer(videoPlayerVC.avplayerLayer!, at: 0)
         
         // present view controller
-        self.present(self.avPlayerViewController, animated: true) {
-            self.avPlayerViewController.player?.play()
-            print("isSlomo?  \(String(describing: self.selectedVideo?.isSloMo))")
-            if self.selectedVideo?.isSloMo == true {
-                self.avPlayer?.rate = 0.025
-            } else {
-                self.avPlayer?.rate = 1.0
-            }
-        }
+        self.present(videoPlayerVC, animated: true)
+
     }
     
     
