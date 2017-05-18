@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BGh-a1-lmW">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BGh-a1-lmW">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -14,7 +14,7 @@
         <scene sceneID="Rn7-G8-jGQ">
             <objects>
                 <navigationController title="Record" id="0H8-qr-Ocg" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Record" id="qgv-pX-ief"/>
+                    <tabBarItem key="tabBarItem" title="Record" selectedImage="record-sml-tab.png" id="qgv-pX-ief"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="GJQ-jb-rhi">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -138,7 +138,7 @@
         <scene sceneID="naH-oB-Vfj">
             <objects>
                 <navigationController id="RJd-rj-Qpr" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Play" id="Uhb-oa-V9t"/>
+                    <tabBarItem key="tabBarItem" title="Play" selectedImage="play-icon-tab.png" id="Uhb-oa-V9t"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="TcV-Ap-nBH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -220,4 +220,8 @@
             <point key="canvasLocation" x="-1252" y="-188"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="play-icon-tab.png" width="50" height="50"/>
+        <image name="record-sml-tab.png" width="50" height="50"/>
+    </resources>
 </document>

@@ -62,8 +62,10 @@ class PlayCollectionViewController : UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VideoCell
-        
+
         let thumbPathStr =  videoManager.documentDirectoryPath?.appending(videoManager.VideoObjectsArray[indexPath.row].thumbnailPath)
+        print("thumbPathStr: \(String(describing: thumbPathStr))")
+        
         let thumbPath = URL(fileURLWithPath: thumbPathStr!)
         
         do {

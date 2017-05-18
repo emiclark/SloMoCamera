@@ -15,12 +15,13 @@ import Photos
 
 class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
 
+    
     var VideoPlayerVC = VideoPlayerViewController()
     var avPlayer : AVPlayer?
     var DDMoviePathURL : URL?
     var movieWasSaved = false
     var newVideo : Video?
-    var playbackRate : Float?
+    var playbackRate : Float = 1.0
     
     let fps240PlaybackRate : Float = 0.125
     let fps120PlaybackRate : Float = 0.250
@@ -66,15 +67,16 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         
         print("saved outputFileLocation: ->>", self.outputFileLocation!)
   
-        newVideo = VideoManager.sharedInstance.saveMovie(movieURL: self.outputFileLocation!, playbackRate : Float(self.playbackRate!))
+        newVideo = VideoManager.sharedInstance.saveMovie(movieURL: outputFileLocation!, playbackRate : playbackRate)
         
         // set properties in VideoPlayerVC
         let videoPlayerVC = VideoPlayerViewController()
         
         videoPlayerVC.video = newVideo
-        let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as String
-        let filepath = documentDirectoryPath.appending((newVideo?.videoPath)!)
-        let selectedVideoURL = URL(fileURLWithPath: (filepath))
+        let videoManager = VideoManager.sharedInstance
+        
+        let filepath = videoManager.documentDirectoryPath?.appending((newVideo?.videoPath)!)
+        let selectedVideoURL = URL(fileURLWithPath: (filepath)!)
         
         print("self.selectedVideoURL: \(String(describing: selectedVideoURL))")
     
@@ -333,6 +335,7 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     // MARK: AVCaptureFileDelegate
     
     public func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [Any]!, error: Error!) {
+        
         // temp directory where video is saved to
         print("capture finished: --> \(outputFileURL)")
         self.outputFileLocation = outputFileURL
@@ -398,7 +401,6 @@ class RecordViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         let seconds :Int64 = MAX_RECORDED_DURATION
         let preferredTime :Int32 = 1
         return CMTimeMake(seconds, preferredTime)
-        
     }
 
     

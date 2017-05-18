@@ -39,21 +39,23 @@ class VideoManager: NSObject {
     func initializeApp() {
         // loads existing videos from document directory into app
         
-        // get path for documents directory
-        self.documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as String
-        self.videoObjectArrayPath = self.documentDirectoryPath?.appending("/VideoObjectsArray")
-        print(self.videoObjectArrayPath!)
-        let url = URL(fileURLWithPath: self.videoObjectArrayPath!)
-        
-        // if file exists then unarchive
-        guard let result = NSData(contentsOf: url)
-            else {
-                print("nothing archived on device")
-                return
+        // check if anything saved previously in documents directory
+        if UserDefaults.standard.object(forKey: "VideoObjectsArray") != nil {
+            // exists.
+
+            // unarchive and set to VideoObjectArray
+            let data = UserDefaults.standard.data(forKey: "VideoObjectsArray")
+            if (NSKeyedUnarchiver.unarchiveObject(with: data!) as? [Video]) != nil {
+                self.VideoObjectsArray = (NSKeyedUnarchiver.unarchiveObject(with: data!) as? [Video])!
+                self.VideoObjectsArray.forEach({print($0.videoPath,$0.thumbnailPath, $0.playbackRate)})
+            } else {
+                print("There was an error")
+            }
         }
-        // unarchive and set to VideoObjectArray
-        let result1 = NSKeyedUnarchiver.unarchiveObject(with: result as Data)
-        self.VideoObjectsArray = result1 as! [Video]
+        
+            // get document directory path
+            self.documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as String
+            print(">>documentDirectoryPath", self.documentDirectoryPath!)
     }
     
     
@@ -105,9 +107,16 @@ class VideoManager: NSObject {
                 
                 // add new video & thumbnail object to videoArray
                 let newVideo = Video.init(videoPath: moviePathString, thumbnailPath: thumbnailPathString!, playbackRate: Float(playbackRate))
-                
+
                 // add video Object to array
                 self.VideoObjectsArray.append(newVideo)
+                print(newVideo)
+                
+                // encode and archive VideoObjectsArray
+                let encodedData = NSKeyedArchiver.archivedData(withRootObject: VideoObjectsArray)
+                UserDefaults.standard.set(encodedData, forKey: "VideoObjectsArray")
+                UserDefaults.standard.synchronize()
+                
                 return newVideo
                 
                 
@@ -115,12 +124,6 @@ class VideoManager: NSObject {
                 print("*** Error generating thumbnail: \(error.localizedDescription)")
             }
             
-            // encode and archive VideoObjectsArray to documents directory
-            let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self.VideoObjectsArray, toFile: self.videoObjectArrayPath!)
-            
-                if !isSuccessfulSave {
-                print("Failed to save video and data.")
-            }
                 
         } else {
             print("error saving file")
@@ -129,11 +132,5 @@ class VideoManager: NSObject {
         // return empty videoObject
         let video = Video.init(videoPath: "", thumbnailPath: "", playbackRate: 1.0)
         return video
-    }
-    
-    
-
-    
+    }    
 }
-
-
