@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		000E4FD81EB7CE6400ECE440 /* VideoPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000E4FD71EB7CE6400ECE440 /* VideoPlayerViewController.swift */; };
 		002F358B1EA80F6000A67384 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002F358A1EA80F6000A67384 /* Video.swift */; };
+		003592D11ED227940066E521 /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = 003592D01ED227940066E521 /* play.png */; };
+		003592D31ED228180066E521 /* record.png in Resources */ = {isa = PBXBuildFile; fileRef = 003592D21ED228180066E521 /* record.png */; };
 		005D9B5E1EA53ABF00DB4CAD /* VideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005D9B5D1EA53ABF00DB4CAD /* VideoManager.swift */; };
 		00AF4C831EA1434A00DA6BE6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00AF4C821EA1434A00DA6BE6 /* AppDelegate.swift */; };
 		00AF4C881EA1434A00DA6BE6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00AF4C861EA1434A00DA6BE6 /* Main.storyboard */; };
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		000E4FD71EB7CE6400ECE440 /* VideoPlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewController.swift; sourceTree = "<group>"; };
 		002F358A1EA80F6000A67384 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
+		003592D01ED227940066E521 /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
+		003592D21ED228180066E521 /* record.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record.png; sourceTree = "<group>"; };
 		005D9B5D1EA53ABF00DB4CAD /* VideoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoManager.swift; sourceTree = "<group>"; };
 		00AF4C7F1EA1434A00DA6BE6 /* SloMoCamera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SloMoCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00AF4C821EA1434A00DA6BE6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -83,6 +87,8 @@
 				00AF4C941EA14A5600DA6BE6 /* RecordViewController.swift */,
 				000E4FD71EB7CE6400ECE440 /* VideoPlayerViewController.swift */,
 				00AF4C891EA1434A00DA6BE6 /* Assets.xcassets */,
+				003592D21ED228180066E521 /* record.png */,
+				003592D01ED227940066E521 /* play.png */,
 				00AF4C8B1EA1434A00DA6BE6 /* LaunchScreen.storyboard */,
 				00AF4C8E1EA1434A00DA6BE6 /* Info.plist */,
 			);
@@ -159,7 +165,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				003592D31ED228180066E521 /* record.png in Resources */,
 				00AF4C8D1EA1434A00DA6BE6 /* LaunchScreen.storyboard in Resources */,
+				003592D11ED227940066E521 /* play.png in Resources */,
 				00AF4C8A1EA1434A00DA6BE6 /* Assets.xcassets in Resources */,
 				00AF4C881EA1434A00DA6BE6 /* Main.storyboard in Resources */,
 			);

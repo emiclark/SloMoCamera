@@ -14,7 +14,7 @@
         <scene sceneID="Rn7-G8-jGQ">
             <objects>
                 <navigationController title="Record" id="0H8-qr-Ocg" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Record" selectedImage="record-sml-tab.png" id="qgv-pX-ief"/>
+                    <tabBarItem key="tabBarItem" title="Record" image="record.png" id="qgv-pX-ief"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="GJQ-jb-rhi">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -138,7 +138,7 @@
         <scene sceneID="naH-oB-Vfj">
             <objects>
                 <navigationController id="RJd-rj-Qpr" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Play" selectedImage="play-icon-tab.png" id="Uhb-oa-V9t"/>
+                    <tabBarItem key="tabBarItem" title="Play" image="play.png" id="Uhb-oa-V9t"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="TcV-Ap-nBH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -221,7 +221,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="play-icon-tab.png" width="50" height="50"/>
-        <image name="record-sml-tab.png" width="50" height="50"/>
+        <image name="play.png" width="35" height="35"/>
+        <image name="record.png" width="35" height="35"/>
     </resources>
 </document>
